@@ -28,7 +28,7 @@ class_labels = [
 "Tomato Yellow Leaf Curl Virus"
 ]
 
-model_path = f'/opt/render/project/src/Densenet_model/{model_name}_model.sav'
+model_path = f'/opt/render/project/src/Densenet_model/Densenet_model/{model_name}_model.sav'
 gdown.download(f'https://drive.google.com/uc?id={model_id}', model_path, quiet=False)
 model = joblib.load(model_path)
 
