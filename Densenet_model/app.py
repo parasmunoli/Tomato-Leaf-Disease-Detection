@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
 from PIL import Image
 import numpy as np
+import joblib
 import tensorflow as tf
 from flask_cors import CORS
 import gdown
-import os
 
 
 app = Flask(__name__)
@@ -16,33 +16,21 @@ model_name = 'densenet'
 
 
 class_labels = [
-    "Tomato Bacterial spot",
-    "Tomato Early blight",
-    "Tomato Healthy",
-    "Tomato Late blight",
-    "Tomato Leaf Mold",
-    "Tomato Mosaic virus",
-    "Tomato Septoria leaf spot",
-    "Tomato Spider mites",
-    "Tomato Target Spot",
-    "Tomato Yellow Leaf Curl Virus"
+"Tomato Bacterial spot",
+"Tomato Early blight",
+"Tomato Healthy",
+"Tomato Late blight",
+"Tomato Leaf Mold",
+"Tomato Mosaic virus",
+"Tomato Septoria leaf spot",
+"Tomato Spider mites",
+"Tomato Target Spot",
+"Tomato Yellow Leaf Curl Virus"
 ]
 
-
-# Use dynamic path based on current working directory
-model_dir = os.path.join(os.getcwd(), 'Densenet_model')
-if not os.path.exists(model_dir):
-    os.makedirs(model_dir)
-
-
-model_path = os.path.join(model_dir, f'{model_name}_model.h5')
-
-
+model_path = f'/opt/render/project/src/Densenet_model/{model_name}_model.sav'
 gdown.download(f'https://drive.google.com/uc?id={model_id}', model_path, quiet=False)
-
-
-# Load the model using TensorFlow
-model = tf.keras.models.load_model(model_path)
+model = joblib.load(model_path)
 
 
 def preprocess_image(image, target_size):
@@ -62,23 +50,15 @@ def predict():
     if 'image' not in request.files:
         return jsonify({'error': 'No image file provided'}), 400
 
-
     image_file = request.files['image']
     try:
         image = Image.open(image_file)
     except:
         return jsonify({'error': 'Invalid image format'}), 400
 
-
     preprocessed_image = preprocess_image(image, target_size=(224, 224))
 
-
-    try:
-        prediction = class_labels[get_model_prediction(model, preprocessed_image)]
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
+    prediction = class_labels[get_model_prediction(model, preprocessed_image)]
     return jsonify({'prediction': prediction})
 
 
