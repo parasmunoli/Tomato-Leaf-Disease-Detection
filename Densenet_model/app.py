@@ -16,21 +16,19 @@ model_name = 'densenet'
 
 
 class_labels = [
-    "Tomato Bacterial spot", 
-    "Tomato Early blight", 
-    "Tomato Healthy",
-    "Tomato Late blight", 
-    "Tomato Leaf Mold", 
-    "Tomato Mosaic virus", 
-    "Tomato Septoria leaf spot",
-    "Tomato Spider mites", 
-    "Tomato Target Spot", 
-    "Tomato Yellow Leaf Curl Virus"
+"Tomato Bacterial spot",
+"Tomato Early blight",
+"Tomato Healthy",
+"Tomato Late blight",
+"Tomato Leaf Mold",
+"Tomato Mosaic virus",
+"Tomato Septoria leaf spot",
+"Tomato Spider mites",
+"Tomato Target Spot",
+"Tomato Yellow Leaf Curl Virus"
 ]
 
-
-# Download and load the model
-model_path = f'{model_name}_model.sav'
+model_path = f'/opt/render/project/src/Densenet_model/{model_name}_model.sav'
 gdown.download(f'https://drive.google.com/uc?id={model_id}', model_path, quiet=False)
 model = joblib.load(model_path)
 
