@@ -35,7 +35,7 @@ model_path = os.path.join(model_dir, f'{model_name}_model.sav')  # Using .sav fo
 gdown.download(f'https://drive.google.com/uc?id={model_id}', model_path, quiet=False)
 
 # Load the model using joblib
-model = joblib.load(model_path)
+model = joblib.load(densenet_model.sav)
 
 def preprocess_image(image, target_size):
     image = image.resize(target_size)
