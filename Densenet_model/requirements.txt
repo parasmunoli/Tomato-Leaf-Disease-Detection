@@ -6,3 +6,4 @@ keras==2.13.1
 gunicorn
 numpy
 flask-cors
+gdown
