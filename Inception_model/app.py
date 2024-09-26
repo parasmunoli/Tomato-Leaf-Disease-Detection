@@ -11,23 +11,8 @@ app = Flask(__name__)
 CORS(app)
 
 
-model_ids = {
-    'inception': 'YOUR_INCEPTION_MODEL_ID',
-    'densenet': 'YOUR_DENSENET_MODEL_ID',
-    'vgg16': 'YOUR_VGG16_MODEL_ID'
-}
-
-
-# Load models only once
-models = {}
-for name, model_id in model_ids.items():
-    model_url = f'https://drive.google.com/uc?id={model_id}'
-    model_path = f'{name}_model.sav'
-    try:
-        models[name] = joblib.load(model_path)
-    except FileNotFoundError:
-        gdown.download(model_url, model_path, quiet=False)
-        models[name] = joblib.load(model_path)
+model_id = '1JQQkD-8jRQXI9Twp7BjJu_kxlmOqiljy'
+model_name = 'inception'
 
 
 class_labels = [
@@ -42,6 +27,12 @@ class_labels = [
     "Tomato Target Spot", 
     "Tomato Yellow Leaf Curl Virus"
 ]
+
+
+# Download and load the model
+model_path = f'{model_name}_model.sav'
+gdown.download(f'https://drive.google.com/uc?id={model_id}', model_path, quiet=False)
+model = joblib.load(model_path)
 
 
 def preprocess_image(image, target_size):
@@ -69,18 +60,13 @@ def predict():
 
     preprocessed_image = preprocess_image(image, target_size=(224, 224))
 
-    model_choice = request.args.get('model', 'all')
+    prediction = class_labels[get_model_prediction(model, preprocessed_image)]
+    return jsonify({'prediction': prediction})
 
-    if model_choice == 'all':
-        predictions = {name: class_labels[get_model_prediction(model, preprocessed_image)] for name, model in models.items()}
-        return jsonify(predictions)
 
-    selected_model = models.get(model_choice)
-    if selected_model:
-        prediction = class_labels[get_model_prediction(selected_model, preprocessed_image)]
-        return jsonify({f'{model_choice}_prediction': prediction})
-
-    return jsonify({'error': f'Invalid model choice. Available options are: {", ".join(models.keys())}, or "all".'}), 400
+@app.route('/status', methods=['GET'])
+def status():
+    return jsonify({"success": True, "code": 200})
 
 
 if __name__ == '__main__':
